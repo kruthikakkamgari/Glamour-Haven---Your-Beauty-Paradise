@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Glamour Haven - Your Beauty Paradise</title>
+    <style>
+        /* Global Styles */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f8e0e0;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: auto;
+            overflow: hidden;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-container {
+            margin-top: 50px;
+            text-align: center;
+        }
+
+        .login-form {
+            width: 300px;
+            margin: auto;
+            background-color: #fff;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .login-form input {
+            width: calc(100% - 40px);
+            padding: 10px;
+            margin-bottom: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .login-form button {
+            width: calc(100% - 40px);
+            padding: 10px;
+            background-color: #20b2aa;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-form button:hover {
+            background-color: #ff7f50;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .brand-buttons {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .brand-buttons button {
+            padding: 10px 20px;
+            margin: 0 10px;
+            background-color: #20b2aa;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .brand-buttons button:hover {
+            background-color: #ff7f50;
+        }
+
+        .products {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .product {
+            width: calc(25% - 20px);
+            margin: 10px;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+
+        .product img {
+            width: 100%;
+            border-radius: 5px;
+        }
+
+        .product h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product p {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 10px;
+        }
+
+        .product .price {
+            font-size: 16px;
+            font-weight: bold;
+            color: #20b2aa;
+            margin-bottom: 10px;
+        }
+
+        .product button {
+            padding: 8px 16px;
+            background-color: #20b2aa;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .product button:hover {
+            background-color: #ff7f50;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 80%;
+            border-radius: 10px;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+            text-decoration: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <div class="login-container">
+        <h2>Welcome to Glamour Haven</h2>
+        <p>Please login to explore our beauty products.</p>
+        <form class="login-form" id="login-form">
+            <input type="text" placeholder="Enter your username">
+            <input type="password" placeholder="Enter your password">
+            <button type="button" onclick="login()">Login</button>
+        </form>
+    </div>
+
+    <div class="container hidden" id="main-content">
+        <div class="brand-buttons">
+            <button onclick="filterProducts('All')">All Products</button>
+            <button onclick="filterProducts('Loreal')">L'Oréal</button>
+            <button onclick="filterProducts('Maybelline')">Maybelline</button>
+            <button onclick="filterProducts('MAC')">MAC</button>
+            <button onclick="filterProducts('Nyx')">NYX</button>
+        </div>
+        <div class="products" id="products-container">
+            <!-- Product cards will be dynamically generated here -->
+        </div>
+        <button class="cart-button" id="cart-button" onclick="openCartModal()">View Cart</button>
+    </div>
+
+    <div id="cartModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeCartModal()">&times;</span>
+        <h2>Shopping Cart</h2>
+        <ul id="cart-items"></ul>
+        <div id="grand-total">Grand Total: $0.00</div> <!-- Added this line -->
+        <button onclick="checkout()">Checkout</button>
+    </div>
+</div>
+   
+<script>
+    const productsContainer = document.getElementById('products-container');
+    const cartButton = document.getElementById('cart-button');
+    let cartItems = [];
+
+    const productsData = [
+        {
+            brand: 'Loreal',
+            name: "L'Oreal EverPure Bond Sulfate Free Strengthening Split End Repair Conditioner, Damaged Hair 6.8 fl oz",
+            description: "L'Oreal Paris EverPure Bond Repair hair care system with citric acid repairs and strengthens color treated, damaged, and fragile hair while leaving hair soft.",
+            price: '$19.99',
+            imageUrl: 'https://i5.walmartimages.com/asr/4ec3af22-8249-4e26-a5ab-fd25c9709d65.c21b9977896a7cfb4ca0107f8eb8d94c.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF'
+        },
+        {
+            brand: 'Loreal',
+            name: "L'Oreal Paris Age Perfect Radiant Serum Foundation Makeup, 125 Cappuccino, 1 fl oz",
+            description: "L'Oreal Paris Age Perfect Radiant Serum Foundation Makeup, 125 Cappuccino, Finally, makeup specially designed for mature skin - L'Oreal Paris Age Perfect Radiant Serum Foundation Makeup, 125 Cappuccino is a carefully formulated foundation that provides your skin with Vitamin B3 and Hydrating Serum while also being suitable for sensitive skin.",
+            price: '$29.99',
+            imageUrl: 'https://i5.walmartimages.com/seo/L-Oreal-Paris-Age-Perfect-Radiant-Serum-Foundation-Makeup-125-Cappuccino-1-fl-oz_75e7014c-2822-4be0-8302-b1e29819f710.6bbc52f673afd8b2dd89ab1fd4ca4e2b.jpeg?odnHeight=2000&odnWidth=2000&odnBg=FFFFFF'
+        },
+        {
+            brand: 'Loreal',
+            name: "L'Oreal Paris Colour Riche Original Satin Lipstick for Moisturized Lips, 254 Everbloom",
+            description: "L'Oreal Paris Colour Riche Original Satin Lipstick for Moisturized Lips, Everbloom, L'Oreal Paris Presents The Houses of Color Riche- 4 vibrant color families. 52 opulent shades. Enrich your lips with 75% caring ingredients. Express yourself and find the perfect shade for you, from bold reds to your-lips-but-better nudes. Color Riche Satin smoothes the lips in one coat and leaves the lips feeling soft and moisturized. Color Riche lip color also delivers intense color payoff and is enriched with argan oil and vitamin E.",
+            price: '$9.97',
+            imageUrl: 'https://th.bing.com/th/id/OIP.C7VWfKNqno9KfZYTrwRMwAAAAA?rs=1&pid=ImgDetMain'
+        },
+        {
+            brand: 'Maybelline',
+            name: "Maybelline Great Lash Washable Mascara, Blackest Black, 1 Tube",
+            description: "After 40 years, Great Lash is still America's favorite mascara. Ophthalmologist tested. Hypoallergenic tested. Suitable for contact lens wearers. Packaging may vary, what you receive may not be what is reflected on site. Brand Story By Maybelline.",
+            price: '$6.34',
+            imageUrl: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/products/pictures/item/free/original/IIslrxaED-Maybelline-New-York-Lash-Sensational-Sky-High-Waterproof-Mascara-Very-Black-(6ml).jpeg?dpr=1'
+        },
+        {
+            brand: 'Maybelline',
+            name: "Maybelline Fit Me Matte + Poreless Liquid Foundation Makeup, Light Beige, 1 fl oz",
+            description: "Looking for the perfect foundation fit? Maybelline New York's Fit Me Matte + Poreless Liquid Foundation is all about your individual skin tone and texture. Ideal for normal to oily skin types, our exclusive matte foundation formula features micro-powders to control shine and blur pores for an all-day, natural matte finish. Apply foundation onto skin and blend with fingertips, foundation brush, or makeup sponge.",
+            price: '$6.34',
+            imageUrl: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/products/pictures/item/free/original/1067303/qALrI-ppv-1067303_1.jpg?dpr=1F'
+        },
+        {
+            brand: 'Maybelline',
+            name: "Maybelline Super Stay Matte Ink Liquid Lipstick, 120 Artist, 0.17 fl oz",
+            description: "Maybelline's Super Stay Matte Ink™ Liquid Lipstick gives you a flawless matte finish in a range of super saturated shades. Ink your lips in up to 16-hour saturated liquid matte. The lipstick features a unique arrow applicator for precise application and is available in a range of super saturated shades.",
+            price: '$7.98',
+            imageUrl: 'https://th.bing.com/th/id/OIP.nj6glEyhuI3w_ofH15BcTAHaHa?rs=1&pid=ImgDetMain'
+        },
+        {
+            brand: 'MAC',
+            name: "MAC Studio Fix Fluid Foundation SPF 15, NW13",
+            description: "M·A·C Studio Fix Fluid SPF 15 is a modern foundation that combines a natural matte finish and medium-to-full buildable coverage with broad spectrum UVA/UVB SPF 15/PA++ protection. Applies, builds and blends easily and evenly while controlling shine.",
+            price: '$39.00',
+            imageUrl: 'https://th.bing.com/th/id/R.d9df11806805408a20649496b597038e?rik=vlVlMFSpJtzI%2bw&riu=http%3a%2f%2ftest-storage-mumbai.s3.amazonaws.com%2fuploads%2farticle%2fog_image%2f716%2fMAC-StudioFixFluid-SPF15.jpg&ehk=IzPG%2b31eKE37ArW8N%2f%2bUNAxUsMPoGWLEZ2v7oQFWWC0%3d&risl=&pid=ImgRaw&r=0'
+        },
+        {
+            brand: 'MAC',
+            name: "MAC Matte Lipstick, Velvet Teddy",
+            description: "A creamy rich Lipstick formula with high colour payoff in a no-shine matte finish.",
+            price: '$22.00',
+            imageUrl: 'https://cdn.tirabeauty.com/v2/billowing-snowflake-434234/tira-p/wrkr/products/pictures/item/free/original/1082189/K6PIhuoABM-773602588800_1.jpg?dpr=1'
+        },
+        {
+            brand: 'Nyx',
+            name: "NYX Professional Makeup Ultimate Shadow Palette, Warm Neutrals",
+            description: "We named this collection the Ultimate Shadow Palette because that's exactly what it is-a pro-level palette packed with 16 high-performance eyeshadows in a rainbow of tone-inspired shades. Available in six striking color combinations-Nude, Bright, Warm Neutral, Cool Neutral, Smokey & Highlight, and Electric-this set features a vivid mix of velvety-rich textures and mesmerizing finishes that range from mattes and satins to shimmers and metallics. Each blendable shade glides on and delivers ultimate color payoff.",
+            price: '$18.00',
+            imageUrl: 'https://images.matas.dk/Assets_v3/200001-300000/285001-286000/285101-285200/285171/product_v1_x4.jpg'
+        },
+        {
+            brand: 'Nyx',
+            name: "NYX Professional Makeup Butter Gloss, Crème Brulee, 0.27 fl oz",
+            description: "Butter me up with divine gloss that feels like it melts on lips. NYX Professional Makeup Butter Gloss is available in a wide variety of sumptuous shades with sheer to medium coverage that melts onto your lips and is never sticky, leaving your lips soft, supple and kissable. Apply directly to lips with spatula applicator, layering over other lip products. 0.27 fl. oz.",
+            price: '$5.00',
+            imageUrl: 'https://static.thcdn.com/images/large/original/productimg/1600/1600/12954878-1664882204445256.jpg'
+        }
+    ];
+
+    function login() {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('main-content').classList.remove('hidden');
+    }
+
+    function createProductCard(product) {
+        const productCard = document.createElement('div');
+        productCard.className = 'product';
+
+        const img = document.createElement('img');
+        img.src = product.imageUrl;
+        img.alt = product.name;
+        productCard.appendChild(img);
+
+        const title = document.createElement('h3');
+        title.textContent = product.name;
+        productCard.appendChild(title);
+
+        const desc = document.createElement('p');
+        desc.textContent = product.description;
+        productCard.appendChild(desc);
+
+        const price = document.createElement('div');
+        price.className = 'price';
+        price.textContent = product.price;
+        productCard.appendChild(price);
+
+        const addButton = document.createElement('button');
+        addButton.textContent = 'Add to Cart';
+        addButton.onclick = () => addToCart(product);
+        productCard.appendChild(addButton);
+
+        productsContainer.appendChild(productCard);
+    }
+
+    function filterProducts(brand) {
+        productsContainer.innerHTML = '';
+        const filteredProducts = brand === 'All' ? productsData : productsData.filter(product => product.brand === brand);
+        filteredProducts.forEach(createProductCard);
+    }
+
+    function addToCart(product) {
+        cartItems.push(product);
+        alert(`${product.name} added to cart`);
+    }
+
+    function openCartModal() {
+        const cartModal = document.getElementById('cartModal');
+        const cartItemsList = document.getElementById('cart-items');
+        cartItemsList.innerHTML = '';
+
+        cartItems.forEach(item => {
+            const listItem = document.createElement('li');
+            listItem.textContent = `${item.name} - ${item.price}`;
+            cartItemsList.appendChild(listItem);
+        });
+
+        cartModal.style.display = 'block';
+    }
+
+    function closeCartModal() {
+        const cartModal = document.getElementById('cartModal');
+        cartModal.style.display = 'none';
+    }
+
+    function checkout() {
+        alert('Checkout process initiated!');
+    }
+
+    window.onclick = function(event) {
+        const cartModal = document.getElementById('cartModal');
+        if (event.target == cartModal) {
+            cartModal.style.display = 'none';
+        }
+    }
+
+    
+
+   function calculateGrandTotal() {
+    let total = 0;
+    cartItems.forEach(item => {
+        const price = parseFloat(item.price.replace('$', ''));
+        total += price;
+    });
+    return total.toFixed(2);
+}
+s
+
+    function checkout() {
+        const grandTotal = calculateGrandTotal();
+        document.getElementById('grand-total').textContent = `Grand Total: $${grandTotal}`;
+        alert(`Your grand total is $${grandTotal}`);
+    }
+</script>
+</body>
+</html>
