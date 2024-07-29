@@ -4,7 +4,7 @@ Glamour Haven is a simple e-commerce website designed to showcase and sell beaut
 
 ## Files
 
-- `Glamour.html`: The main HTML file containing the structure, styling,functionality of the webpage.
+- `glamour.html`: The main HTML file containing the structure, styling,functionality of the webpage.
 
 
 ## Features
@@ -16,7 +16,7 @@ Glamour Haven is a simple e-commerce website designed to showcase and sell beaut
 
 ## How to Use
 
-1. Open `index.html` in a web browser to view the Glamour Haven page.
+1. Open `glamour.html` in a web browser to view the Glamour Haven page.
 2. Use the login form to access the main content of the site.
 3. Browse and filter beauty products by brand.
 4. Add products to the cart and view the total price.
